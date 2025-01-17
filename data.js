@@ -1,4 +1,4 @@
-let data={};
+let data = {};
 
 function builddata() {
     const filesArray = Object.keys(filesContent).map(key => ({
@@ -9,36 +9,36 @@ function builddata() {
     console.log("Files Found: ", filesArray);
 
     filesArray.forEach(file => {
-        
         switch(file.filename) {
             case "advancement.txt":
-            buildadvancementdata(file.content);
-            break;
+                buildadvancementdata(file.content);
+                break;
             case "compobj.txt":
-            buildcompobjdata(file.content);
-            break;
+                buildcompobjdata(file.content);
+                break;
             case "objectives.txt":
-            buildobjectivesdata(file.content);
-            break;
+                buildobjectivesdata(file.content);
+                break;
             case "schedule.txt":
-            buildscheduledata(file.content);
-            break;
+                buildscheduledata(file.content);
+                break;
             case "settings.txt":
-            buildsettingsdata(file.content);
-            break;
+                buildsettingsdata(file.content);
+                break;
             case "standings.txt":
-            buildstandingsdata(file.content);
-            break;
+                buildstandingsdata(file.content);
+                break;
             case "tasks.txt":
-            buildtasksdata(file.content);
-            break;
+                buildtasksdata(file.content);
+                break;
             case "weather.txt":
-            buildweatherdata(file.content);
-            break;
+                buildweatherdata(file.content);
+                break;
             case "initteams.txt":
                 buildinitteamsdata(file.content);
-            break;
-            default:break;
+                break;
+            default:
+                break;
         }
     });
 
@@ -46,32 +46,31 @@ function builddata() {
     document.getElementById('downloadjsonbtn').classList.remove('hidden');
 }
 
-function buildcompobjdata(content) {console.log(content);
+// Build data for "compobj.txt"
+function buildcompobjdata(content) {
     data["compobj"] = [];
-
-    let lines = content.split(/\r?\n/);console.log(lines);
+    let lines = content.split(/\r?\n/);
 
     lines.forEach(line => {
         let parts = line.split(',');
 
-        // Convert to integers and check for null or NaN values
         let parsedLine = parseInt(parts[0]);
         let parsedLevel = parseInt(parts[1]);
         let parsedParent = parseInt(parts[4]);
 
-        // Only add to data if all required fields are not null or NaN
         if (!isNaN(parsedLine) && !isNaN(parsedLevel) && !isNaN(parsedParent) && parts[2] !== undefined && parts[3] !== undefined) {
             data["compobj"].push({
                 line: parsedLine,
                 level: parsedLevel,
-                shortname: parts[2] || '', // Default to empty string if undefined
-                longname: parts[3] || '',  // Default to empty string if undefined
+                shortname: parts[2] || '',
+                longname: parts[3] || '',
                 parent: parsedParent
             });
         }
     });
 }
 
+// Build data for "advancement.txt"
 function buildadvancementdata(content) {
     data["advancement"] = [];
 
@@ -79,13 +78,11 @@ function buildadvancementdata(content) {
     lines.forEach(line => {
         let parts = line.split(',');
 
-        // Convert to integers and check for null or NaN values
         let parsedGroupId = parseInt(parts[0]);
         let parsedSlot = parseInt(parts[1]);
         let parsedPushToCompetition = parseInt(parts[2]);
         let parsedPushToPosition = parseInt(parts[3]);
 
-        // Only add to data if all fields are valid numbers
         if (!isNaN(parsedGroupId) && !isNaN(parsedSlot) && !isNaN(parsedPushToCompetition) && !isNaN(parsedPushToPosition)) {
             data["advancement"].push({
                 groupid: parsedGroupId,
@@ -97,9 +94,9 @@ function buildadvancementdata(content) {
     });
 }
 
+// Build data for "objectives.txt"
 function buildobjectivesdata(content) {
     data["objectives"] = [];
-
     const lines = content.split(/\r?\n/);
     const uniqueEntries = new Map();
 
@@ -124,6 +121,7 @@ function buildobjectivesdata(content) {
     data["objectives"] = Array.from(uniqueEntries.values());
 }
 
+// Build data for "schedule.txt"
 function buildscheduledata(content) {
     data["schedule"] = [];
 
@@ -151,9 +149,11 @@ function buildscheduledata(content) {
     });
 }
 
+// Build data for "settings.txt"
 function buildsettingsdata(content) {
     data["settings"] = [];
 
+    // List of allowed tags
     const textTags = [
         'comp_type', 'rule_bookings', 'rule_offsides', 'rule_injuries', 'match_stagetype',
         'match_matchsituation', 'match_endruleleague', 'match_endruleko1leg', 'match_endruleko2leg1',
@@ -164,6 +164,7 @@ function buildsettingsdata(content) {
         'rule_bookings', 'rule_offsides', 'rule_injuries', 'rule_allowadditionalsub', 'schedule_internationaldependency'
     ];
 
+    // Process each line in the content
     content.split(/\r?\n/).forEach(line => {
         let parts = line.split(',');
         let id = parseInt(parts[0]);
@@ -171,6 +172,7 @@ function buildsettingsdata(content) {
         let value = parts[2];
 
         if (!isNaN(id) && tag !== undefined && value !== undefined) {
+            // Check if the tag is in the allowed list (textTags)
             if (textTags.includes(tag)) {
                 data["settings"].push({
                     id: id,
@@ -178,6 +180,7 @@ function buildsettingsdata(content) {
                     value: value
                 });
             } else {
+                // If not in the textTags, try to convert the value to a number
                 const numericValue = parseInt(value);
                 if (!isNaN(numericValue)) {
                     data["settings"].push({
@@ -191,6 +194,7 @@ function buildsettingsdata(content) {
     });
 }
 
+// Build data for "standings.txt"
 function buildstandingsdata(content) {
     data["standings"] = [];
 
@@ -209,6 +213,7 @@ function buildstandingsdata(content) {
     });
 }
 
+// Build data for "tasks.txt"
 function buildtasksdata(content) {
     data["tasks"] = [];
 
@@ -237,6 +242,7 @@ function buildtasksdata(content) {
     });
 }
 
+// Build data for "weather.txt"
 function buildweatherdata(content) {
     data["weather"] = [];
 
@@ -251,7 +257,7 @@ function buildweatherdata(content) {
         const parsedChanceRain = parseInt(parts[3]);
         const parsedChanceSnow = parseInt(parts[4]);
         const parsedChanceOvercast = parseInt(parts[5]);
-        const parsedUnknown=parseInt(parts[6]);
+        const parsedUnknown = parseInt(parts[6]);
         const parsedSunset = parseInt(parts[7]);
         const parsedNighttime = parseInt(parts[8]);
 
@@ -272,18 +278,19 @@ function buildweatherdata(content) {
     });
 }
 
-function buildinitteamsdata(content){
-    data['initteams']=[];
+// Build data for "initteams.txt"
+function buildinitteamsdata(content) {
+    data['initteams'] = [];
 
-    let lines=content.split(/\r?\n/);
-    lines.forEach(line=>{
-        let parts=line.split(',');
+    let lines = content.split(/\r?\n/);
+    lines.forEach(line => {
+        let parts = line.split(',');
 
-        const id=parseInt(parts[0]);
-        const finishpos=parseInt(parts[0]); //last year's finishing position
-        const teamid=parseInt(parts[2]);
+        const id = parseInt(parts[0]);
+        const finishpos = parseInt(parts[0]); // last year's finishing position
+        const teamid = parseInt(parts[2]);
 
-        if(!isNaN(id)&&!isNaN(finishpos)&&!isNaN(teamid)){
+        if (!isNaN(id) && !isNaN(finishpos) && !isNaN(teamid)) {
             data['initteams'].push({
                 id: id,
                 finishpos: finishpos,
